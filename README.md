@@ -10,6 +10,8 @@ then
 
 To run unit tests:
 >./FifoTest
+This uses the Catch2 lightweight test framework, from the Catch2/catch.hpp file. Originally from
+https://github.com/catchorg/Catch2
 
 To run threaded test program:
 >./FifoThreadTest
