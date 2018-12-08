@@ -31,10 +31,11 @@ public:
         // Get a lock before allowing the queue to be deleted
         std::lock_guard<std::mutex> pushLock(queueMutex);
         fifoQ.clear();
+        itemWaiting = false;
     }
 
-    // Delete copy construstor and operator because copying the underlying queue
-    // and its contents doen't make sense
+    // Delete copy constructor and operator because copying the underlying queue
+    // and its contents doesn't make sense
     Fifo(const Fifo&) = delete;
     Fifo& operator=(const Fifo&) = delete;
 
@@ -46,6 +47,8 @@ public:
         std::lock_guard<std::mutex> pushLock(queueMutex);
 
         fifoQ = std::move(other.fifoQ);
+        itemWaiting = other.itemWaiting;
+        other.itemWaiting = false;
     }
 
     Fifo& operator=(Fifo&& other)
@@ -55,6 +58,8 @@ public:
         std::lock_guard<std::mutex> pushLock(queueMutex);
 
         fifoQ = std::move(other.fifoQ);
+        itemWaiting = other.itemWaiting;
+        other.itemWaiting = false;
     }
 
     /// Push an item onto the stack unless it is full.
@@ -65,6 +70,7 @@ public:
             return false;
         }
         fifoQ.push_back(i);
+        itemWaiting = true;
         return true;
     };
 
@@ -72,13 +78,16 @@ public:
     T pop()
     {
         std::unique_lock<std::mutex> lock(queueMutex);
-        while(fifoQ.size() == 0) {
+        while(!itemWaiting) {
             lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            // Allow other threads to get in and push items
             lock.lock();
         }
         T retVal = fifoQ.front();
         fifoQ.pop_front();
+        if(fifoQ.size() == 0) {
+            itemWaiting = false;
+        }
         return retVal;
     };
 
@@ -87,10 +96,13 @@ public:
     {
         std::pair<bool, T> retVal;
         std::lock_guard<std::mutex> pushLock(queueMutex);
-        if(fifoQ.size() > 0) {
+        if(itemWaiting) {
             retVal.first = true;
             retVal.second = fifoQ.front();
             fifoQ.pop_front();
+            if(fifoQ.size() == 0) {
+                itemWaiting = false;
+            }
         }
         else {
             retVal.first = false;
@@ -102,6 +114,7 @@ private:
 
     std::deque<T> fifoQ; /*<! encapsulated queue */
     unsigned int qCapacity; /*<! maximum number of items that can be queued */
+    bool itemWaiting = false;
 
     std::mutex queueMutex; /*<! Mutex to protect the queue */
 };
