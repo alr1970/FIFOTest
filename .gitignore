@@ -1,0 +1,15 @@
+*.suo
+*.VC.db
+*.VC.opendb
+/.vs/*
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+/CMakeCache.txt
+/CMakeFiles/*
+/Debug/*
+/FifoTest.dir/*
+/FifoThreadTest.dir/*
+/Win32/*
+*.sln
+/cmake_install.cmake

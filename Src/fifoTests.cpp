@@ -64,13 +64,14 @@ TEST_CASE("Fifo pop_try", "Calling pop_try instead of pop") {
 }
 
 TEST_CASE("Fifo move operations", "Test move constructor and operator") {
-    Fifo<int> f1(5);
+    Fifo<int> f1(6);
     f1.push(0);
     f1.push(1);
     f1.push(2);
     f1.push(3);
     f1.push(4);
-    Fifo<int> f2(std::move(f1));
+	f1.push(5);
+	Fifo<int> f2(std::move(f1));
     // f1 should be empty now
     std::pair<bool, int> returned = f1.pop_try();
     REQUIRE(!returned.first);
@@ -90,6 +91,9 @@ TEST_CASE("Fifo move operations", "Test move constructor and operator") {
     returned = f2.pop_try();
     REQUIRE(returned.first);
     REQUIRE(returned.second == 4);
+	returned = f2.pop_try();
+	REQUIRE(returned.first);
+	REQUIRE(returned.second == 5);
 
     Fifo<int> f3(5);
     f3.push(0);
