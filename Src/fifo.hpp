@@ -11,22 +11,22 @@
  *  Wrapper for std::queue that provides thread-safety and limits the threads
  *  capacity.
  */
-template<class T> class Fifo
+template<class T> class TSFifo
 {
 public:
     /// Default constructor
-    Fifo()
+    TSFifo()
         : qCapacity(1)
     {
     };
 
     /// Create a Fifo with specified capacity
-    Fifo(unsigned int capacity)
+    TSFifo(unsigned int capacity)
         : qCapacity(capacity)
     {
     };
 
-    ~Fifo()
+    ~TSFifo()
     {
         // Get a lock before allowing the queue to be deleted
         std::lock_guard<std::mutex> pushLock(queueMutex);
@@ -36,11 +36,11 @@ public:
 
     // Delete copy constructor and operator because copying the underlying queue
     // and its contents doesn't make sense
-    Fifo(const Fifo&) = delete;
-    Fifo& operator=(const Fifo&) = delete;
+    TSFifo(const TSFifo&) = delete;
+    TSFifo& operator=(const TSFifo&) = delete;
 
     // Move operator and constructor
-    Fifo(Fifo&& other)
+    TSFifo(TSFifo&& other)
     {
         // Lock both queues
         std::lock_guard<std::mutex> otherPushLock(other.queueMutex);
@@ -51,7 +51,7 @@ public:
         other.itemWaiting = false;
     }
 
-    Fifo& operator=(Fifo&& other)
+    TSFifo& operator=(TSFifo&& other)
     {
         // Lock both queues
         std::lock_guard<std::mutex> otherPushLock(other.queueMutex);

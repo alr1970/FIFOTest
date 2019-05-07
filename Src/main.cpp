@@ -3,7 +3,7 @@
 
 #include "fifo.hpp"
 
-Fifo<int> sharedQueue(5);
+TSFifo<int> sharedQueue(5);
 
 void threadHandler()
 {

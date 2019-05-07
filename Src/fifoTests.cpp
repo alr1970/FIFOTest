@@ -6,18 +6,18 @@
 
 TEST_CASE("Fifo int", "Basic queue behaviour using ints") {
     // zero capacity
-    Fifo<int>* f = new Fifo<int>(0);
+    TSFifo<int>* f = new TSFifo<int>(0);
     REQUIRE(f != nullptr);
     REQUIRE(!f->push(0));
 
     // capacity 1
-    Fifo<int>* f2 = new Fifo<int>(1);
+    TSFifo<int>* f2 = new TSFifo<int>(1);
     REQUIRE(f2 != nullptr);
     REQUIRE(f2->push(0));
     REQUIRE(!f2->push(1));
 
     // capacity 2
-    Fifo<int>* f3 = new Fifo<int>(2);
+    TSFifo<int>* f3 = new TSFifo<int>(2);
     REQUIRE(f3 != nullptr);
     REQUIRE(f3->push(0));
     REQUIRE(f3->push(1));
@@ -30,7 +30,7 @@ TEST_CASE("Fifo int", "Basic queue behaviour using ints") {
 
 TEST_CASE("Fifo struct", "Basic queue behaviour using an arbitrary struct") {
     // capacity 2
-    Fifo<arbitrary>* f3 = new Fifo<arbitrary>(2);
+    TSFifo<arbitrary>* f3 = new TSFifo<arbitrary>(2);
     REQUIRE(f3 != nullptr);
     REQUIRE(f3->push(0));
     REQUIRE(f3->push(1));
@@ -43,7 +43,7 @@ TEST_CASE("Fifo struct", "Basic queue behaviour using an arbitrary struct") {
 
 TEST_CASE("Fifo pop_try", "Calling pop_try instead of pop") {
     // capacity 2
-    Fifo<int>* f3 = new Fifo<int>(3);
+    TSFifo<int>* f3 = new TSFifo<int>(3);
     REQUIRE(f3 != nullptr);
     REQUIRE(f3->push(0));
 	REQUIRE(f3->push(1));
@@ -68,14 +68,14 @@ TEST_CASE("Fifo pop_try", "Calling pop_try instead of pop") {
 }
 
 TEST_CASE("Fifo move operations", "Test move constructor and operator") {
-    Fifo<int> f1(6);
+	TSFifo<int> f1(6);
     f1.push(0);
     f1.push(1);
     f1.push(2);
     f1.push(3);
     f1.push(4);
 	f1.push(5);
-	Fifo<int> f2(std::move(f1));
+    TSFifo<int> f2(std::move(f1));
     // f1 should be empty now
     std::pair<bool, int> returned = f1.pop_try();
     REQUIRE(!returned.first);
@@ -99,13 +99,13 @@ TEST_CASE("Fifo move operations", "Test move constructor and operator") {
 	REQUIRE(returned.first);
 	REQUIRE(returned.second == 5);
 
-    Fifo<int> f3(5);
+    TSFifo<int> f3(5);
     f3.push(0);
     f3.push(1);
     f3.push(2);
     f3.push(3);
     f3.push(4);
-    Fifo<int> f4 = std::move(f3);
+    TSFifo<int> f4 = std::move(f3);
     // f3 should be empty now
     returned = f3.pop_try();
     REQUIRE(!returned.first);
