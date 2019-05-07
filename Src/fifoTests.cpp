@@ -43,22 +43,26 @@ TEST_CASE("Fifo struct", "Basic queue behaviour using an arbitrary struct") {
 
 TEST_CASE("Fifo pop_try", "Calling pop_try instead of pop") {
     // capacity 2
-    Fifo<int>* f3 = new Fifo<int>(2);
+    Fifo<int>* f3 = new Fifo<int>(3);
     REQUIRE(f3 != nullptr);
     REQUIRE(f3->push(0));
-    REQUIRE(f3->push(1));
-    REQUIRE(!f3->push(2));    // Nope, full
+	REQUIRE(f3->push(1));
+	REQUIRE(f3->push(2));
+	REQUIRE(!f3->push(3));    // Nope, full
     std::pair<bool, arbitrary> returned = f3->pop_try();
     REQUIRE(returned.first);
     REQUIRE(returned.second.anInt == 0);
-    REQUIRE(f3->push(2));    // Now there's space
+    REQUIRE(f3->push(3));    // Now there's space
     returned = f3->pop_try();
     REQUIRE(returned.first);
     REQUIRE(returned.second.anInt == 1);
-    returned = f3->pop_try();
-    REQUIRE(returned.first);
-    REQUIRE(returned.second.anInt == 2);
-    // Queue is empty now
+	returned = f3->pop_try();
+	REQUIRE(returned.first);
+	REQUIRE(returned.second.anInt == 2);
+	returned = f3->pop_try();
+	REQUIRE(returned.first);
+	REQUIRE(returned.second.anInt == 3);
+	// Queue is empty now
     returned = f3->pop_try();
     REQUIRE(!returned.first);
 }
